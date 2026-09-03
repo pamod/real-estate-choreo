@@ -1,0 +1,156 @@
+arazzo: 1.0.0
+info:
+  title: Property Insurance MCP Workflows
+  summary: >-
+    Composite, multi-step workflows layered on top of the Property Insurance
+    Coverage API. When this document is attached to the API's MCP Server in
+    WSO2 API Manager, each workflow below is exposed as a single MCP tool
+    that internally orchestrates two or more REST calls.
+  version: 1.0.0
+sourceDescriptions:
+  - name: propertyInsuranceAPI
+    url: ./openapi.yaml
+    type: openapi
+
+workflows:
+  - workflowId: quote-to-policy-issuance
+    summary: Price a coverage quote and immediately bind the policy
+    description: >-
+      Exposed as MCP tool "get_property_insured". Requests a premium quote
+      for a property, then converts the quote into an issued policy in one
+      call — the caller never handles a raw quoteId.
+    inputs:
+      type: object
+      required: [propertyId, propertyValue, propertyType, coverageType]
+      properties:
+        propertyId: { type: string }
+        propertyValue: { type: number }
+        propertyType:
+          type: string
+          enum: [APARTMENT, HOUSE, VILLA, LAND, COMMERCIAL]
+        coverageType:
+          type: string
+          enum: [FIRE, FLOOD, ALL_RISK, LIABILITY, THEFT]
+        constructionYear: { type: integer }
+    steps:
+      - stepId: create-quote
+        description: Price the requested coverage for the property.
+        operationId: createQuote
+        requestBody:
+          contentType: application/json
+          payload:
+            propertyId: $inputs.propertyId
+            propertyValue: $inputs.propertyValue
+            propertyType: $inputs.propertyType
+            coverageType: $inputs.coverageType
+            constructionYear: $inputs.constructionYear
+        successCriteria:
+          - condition: $statusCode == 201
+        outputs:
+          quoteId: $response.body#/id
+          premium: $response.body#/premium/amount
+      - stepId: bind-policy
+        description: Convert the freshly created quote into an issued policy.
+        operationId: createPolicy
+        requestBody:
+          contentType: application/json
+          payload:
+            quoteId: $steps.create-quote.outputs.quoteId
+        successCriteria:
+          - condition: $statusCode == 201
+        outputs:
+          policyId: $response.body#/id
+          policyNumber: $response.body#/policyNumber
+    outputs:
+      quoteId: $steps.create-quote.outputs.quoteId
+      premium: $steps.create-quote.outputs.premium
+      policyId: $steps.bind-policy.outputs.policyId
+      policyNumber: $steps.bind-policy.outputs.policyNumber
+
+  - workflowId: file-claim-for-property
+    summary: Resolve a property's active policy and file a claim against it
+    description: >-
+      Exposed as MCP tool "file_property_claim". Looks up the active policy
+      for a given property, then submits a claim referencing it, so the
+      caller only supplies the propertyId and incident details rather than
+      a policyId.
+    inputs:
+      type: object
+      required: [propertyId, incidentDate, incidentType, claimedAmount]
+      properties:
+        propertyId: { type: string }
+        incidentDate: { type: string, format: date }
+        incidentType: { type: string }
+        description: { type: string }
+        claimedAmount: { type: number }
+    steps:
+      - stepId: resolve-policy
+        description: Find the property's currently active policy.
+        operationId: getPolicyByProperty
+        parameters:
+          - name: propertyId
+            in: path
+            value: $inputs.propertyId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          policyId: $response.body#/id
+      - stepId: submit-claim
+        description: File the claim against the resolved policy.
+        operationId: fileClaim
+        requestBody:
+          contentType: application/json
+          payload:
+            policyId: $steps.resolve-policy.outputs.policyId
+            incidentDate: $inputs.incidentDate
+            incidentType: $inputs.incidentType
+            description: $inputs.description
+            claimedAmount: $inputs.claimedAmount
+        successCriteria:
+          - condition: $statusCode == 201
+        outputs:
+          claimId: $response.body#/id
+          claimStatus: $response.body#/status
+    outputs:
+      policyId: $steps.resolve-policy.outputs.policyId
+      claimId: $steps.submit-claim.outputs.claimId
+      claimStatus: $steps.submit-claim.outputs.claimStatus
+
+  - workflowId: coverage-summary-for-property
+    summary: Return a property's active policy plus its full claim history
+    description: >-
+      Exposed as MCP tool "get_coverage_summary". Combines the policy lookup
+      with its claims list into a single enriched response — a read-only
+      tool suited to support/agent chat flows.
+    inputs:
+      type: object
+      required: [propertyId]
+      properties:
+        propertyId: { type: string }
+    steps:
+      - stepId: resolve-policy
+        description: Find the property's currently active policy.
+        operationId: getPolicyByProperty
+        parameters:
+          - name: propertyId
+            in: path
+            value: $inputs.propertyId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          policyId: $response.body#/id
+          policy: $response.body
+      - stepId: list-claims
+        description: List every claim filed against that policy.
+        operationId: listClaimsForPolicy
+        parameters:
+          - name: policyId
+            in: path
+            value: $steps.resolve-policy.outputs.policyId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          claims: $response.body
+    outputs:
+      policy: $steps.resolve-policy.outputs.policy
+      claims: $steps.list-claims.outputs.claims

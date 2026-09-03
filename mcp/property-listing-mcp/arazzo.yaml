@@ -1,0 +1,177 @@
+arazzo: 1.0.0
+info:
+  title: Property Listing MCP Workflows
+  summary: >-
+    Composite, multi-step workflows layered on top of the Property Listing
+    API. When this document is attached to the API's MCP Server in WSO2 API
+    Manager, each workflow below is exposed as a single MCP tool that
+    internally orchestrates two or more REST calls.
+  version: 1.0.0
+sourceDescriptions:
+  - name: propertyListingAPI
+    url: ./openapi.yaml
+    type: openapi
+
+workflows:
+  - workflowId: add-and-publish-listing
+    summary: Add a property and publish it in one call
+    description: >-
+      Exposed as MCP tool "add_property_listing". Creates the property as a
+      DRAFT record, then immediately publishes it to ACTIVE so it's visible
+      to search — callers don't need to know that create and publish are two
+      separate REST operations.
+    inputs:
+      type: object
+      required: [title, propertyType, listingType, price, address, agentId]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        propertyType:
+          type: string
+          enum: [APARTMENT, HOUSE, VILLA, LAND, COMMERCIAL]
+        listingType:
+          type: string
+          enum: [SALE, RENT]
+        price:
+          type: object
+          properties:
+            amount: { type: number }
+            currency: { type: string }
+        address:
+          type: object
+          properties:
+            line1: { type: string }
+            city: { type: string }
+            country: { type: string }
+        bedrooms: { type: integer }
+        bathrooms: { type: integer }
+        areaSqm: { type: number }
+        agentId: { type: string }
+    steps:
+      - stepId: create-draft-property
+        description: Create the property record in DRAFT status.
+        operationId: addProperty
+        requestBody:
+          contentType: application/json
+          payload:
+            title: $inputs.title
+            description: $inputs.description
+            propertyType: $inputs.propertyType
+            listingType: $inputs.listingType
+            price: $inputs.price
+            address: $inputs.address
+            bedrooms: $inputs.bedrooms
+            bathrooms: $inputs.bathrooms
+            areaSqm: $inputs.areaSqm
+            agentId: $inputs.agentId
+        successCriteria:
+          - condition: $statusCode == 201
+        outputs:
+          propertyId: $response.body#/id
+      - stepId: publish-property
+        description: Flip the newly created listing from DRAFT to ACTIVE.
+        operationId: publishProperty
+        parameters:
+          - name: propertyId
+            in: path
+            value: $steps.create-draft-property.outputs.propertyId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          status: $response.body#/status
+    outputs:
+      propertyId: $steps.create-draft-property.outputs.propertyId
+      status: $steps.publish-property.outputs.status
+
+  - workflowId: search-and-get-property-details
+    summary: Search listings and return full details of the top match
+    description: >-
+      Exposed as MCP tool "find_property". Runs a filtered search, then
+      fetches the complete detail record for the first result, so the tool
+      returns one enriched object instead of requiring a follow-up call.
+    inputs:
+      type: object
+      properties:
+        city: { type: string }
+        propertyType: { type: string }
+        listingType: { type: string }
+        minPrice: { type: number }
+        maxPrice: { type: number }
+        bedrooms: { type: integer }
+    steps:
+      - stepId: search-properties
+        description: Search the catalog using the supplied filters.
+        operationId: listProperties
+        parameters:
+          - name: city
+            in: query
+            value: $inputs.city
+          - name: propertyType
+            in: query
+            value: $inputs.propertyType
+          - name: listingType
+            in: query
+            value: $inputs.listingType
+          - name: minPrice
+            in: query
+            value: $inputs.minPrice
+          - name: maxPrice
+            in: query
+            value: $inputs.maxPrice
+          - name: bedrooms
+            in: query
+            value: $inputs.bedrooms
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          topPropertyId: $response.body#/items/0/id
+          totalResults: $response.body#/total
+      - stepId: get-property-details
+        description: Fetch the full record for the top search result.
+        operationId: getPropertyById
+        parameters:
+          - name: propertyId
+            in: path
+            value: $steps.search-properties.outputs.topPropertyId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          property: $response.body
+    outputs:
+      totalResults: $steps.search-properties.outputs.totalResults
+      property: $steps.get-property-details.outputs.property
+
+  - workflowId: verify-and-delist-property
+    summary: Confirm a listing exists, then remove it
+    description: >-
+      Exposed as MCP tool "delist_property". Looks up the property first so
+      the tool can report a clear "not found" rather than surfacing a raw 404
+      from the delete call, then removes the listing.
+    inputs:
+      type: object
+      required: [propertyId]
+      properties:
+        propertyId: { type: string }
+    steps:
+      - stepId: get-property
+        description: Confirm the property exists and capture its current status.
+        operationId: getPropertyById
+        parameters:
+          - name: propertyId
+            in: path
+            value: $inputs.propertyId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          currentStatus: $response.body#/status
+      - stepId: delist-property
+        description: Remove the confirmed listing from the catalog.
+        operationId: deleteProperty
+        parameters:
+          - name: propertyId
+            in: path
+            value: $inputs.propertyId
+        successCriteria:
+          - condition: $statusCode == 204
+    outputs:
+      previousStatus: $steps.get-property.outputs.currentStatus

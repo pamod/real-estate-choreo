@@ -1,0 +1,13 @@
+schemaVersion: 1.2
+
+endpoints:
+  - name: property-listing-service
+    displayName: Property Listing Service
+    service:
+      basePath: /
+      port: 9091
+    type: REST
+    networkVisibilities:
+      - Project
+      - Organization
+    schemaFilePath: openapi.yaml

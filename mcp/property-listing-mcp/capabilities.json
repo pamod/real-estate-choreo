@@ -1,0 +1,71 @@
+{
+  "tools": [
+    {
+      "name": "add-and-publish-listing",
+      "description": "Add a property and publish it in one call. Creates the property as a DRAFT record, then immediately publishes it to ACTIVE so it's visible to search.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["title", "propertyType", "listingType", "price", "address", "agentId"],
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "propertyType": {
+            "type": "string",
+            "enum": ["APARTMENT", "HOUSE", "VILLA", "LAND", "COMMERCIAL"]
+          },
+          "listingType": {
+            "type": "string",
+            "enum": ["SALE", "RENT"]
+          },
+          "price": {
+            "type": "object",
+            "properties": {
+              "amount": { "type": "number" },
+              "currency": { "type": "string" }
+            }
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "line1": { "type": "string" },
+              "city": { "type": "string" },
+              "country": { "type": "string" }
+            }
+          },
+          "bedrooms": { "type": "integer" },
+          "bathrooms": { "type": "integer" },
+          "areaSqm": { "type": "number" },
+          "agentId": { "type": "string" }
+        }
+      }
+    },
+    {
+      "name": "search-and-get-property-details",
+      "description": "Search listings and return full details of the top match. Runs a filtered search, then fetches the complete detail record for the first result.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": { "type": "string" },
+          "propertyType": { "type": "string" },
+          "listingType": { "type": "string" },
+          "minPrice": { "type": "number" },
+          "maxPrice": { "type": "number" },
+          "bedrooms": { "type": "integer" }
+        }
+      }
+    },
+    {
+      "name": "verify-and-delist-property",
+      "description": "Confirm a listing exists, then remove it. Looks up the property first so the tool can report a clear \"not found\" rather than surfacing a raw 404, then removes the listing.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["propertyId"],
+        "properties": {
+          "propertyId": { "type": "string" }
+        }
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}

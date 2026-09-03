@@ -1,0 +1,27 @@
+schemaVersion: 1.2
+
+endpoints:
+  - name: property-listing-mcp
+    displayName: Property Listing MCP Server
+    service:
+      basePath: /
+      port: 5001
+    type: REST
+    networkVisibilities:
+      - Project
+      - Organization
+
+configurations:
+  env:
+    - name: LISTING_SERVICE_BASE_URL
+      valueFrom:
+        configForm:
+          displayName: Property Listing Service base URL
+          required: true
+          type: string
+    - name: PROPERTY_BEARERAUTH_TOKEN
+      valueFrom:
+        configForm:
+          displayName: Bearer token sent to the Property Listing Service (any non-empty value — the mock backend only checks it's present)
+          required: true
+          type: secret

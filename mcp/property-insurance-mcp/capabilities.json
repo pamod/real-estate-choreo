@@ -1,0 +1,53 @@
+{
+  "tools": [
+    {
+      "name": "quote-to-policy-issuance",
+      "description": "Price a coverage quote and immediately bind the policy. Requests a premium quote for a property, then converts the quote into an issued policy in one call.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["propertyId", "propertyValue", "propertyType", "coverageType"],
+        "properties": {
+          "propertyId": { "type": "string" },
+          "propertyValue": { "type": "number" },
+          "propertyType": {
+            "type": "string",
+            "enum": ["APARTMENT", "HOUSE", "VILLA", "LAND", "COMMERCIAL"]
+          },
+          "coverageType": {
+            "type": "string",
+            "enum": ["FIRE", "FLOOD", "ALL_RISK", "LIABILITY", "THEFT"]
+          },
+          "constructionYear": { "type": "integer" }
+        }
+      }
+    },
+    {
+      "name": "file-claim-for-property",
+      "description": "Resolve a property's active policy and file a claim against it. The caller only supplies the propertyId and incident details rather than a policyId.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["propertyId", "incidentDate", "incidentType", "claimedAmount"],
+        "properties": {
+          "propertyId": { "type": "string" },
+          "incidentDate": { "type": "string", "format": "date" },
+          "incidentType": { "type": "string" },
+          "description": { "type": "string" },
+          "claimedAmount": { "type": "number" }
+        }
+      }
+    },
+    {
+      "name": "coverage-summary-for-property",
+      "description": "Return a property's active policy plus its full claim history. Combines the policy lookup with its claims list into a single enriched response.",
+      "inputSchema": {
+        "type": "object",
+        "required": ["propertyId"],
+        "properties": {
+          "propertyId": { "type": "string" }
+        }
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}

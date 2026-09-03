@@ -1,0 +1,336 @@
+openapi: 3.0.4
+info:
+  title: Property Listing Service
+  description: >-
+    Manages the real-estate listing catalog: searching properties, viewing
+    property details, and adding/updating/publishing/removing listings.
+  version: 1.0.0
+  contact:
+    name: WSO2 AfricaCon 2026 Demo
+servers:
+  - url: http://localhost:9091
+    description: Local mock backend
+    x-internal: false
+tags:
+  - name: properties
+    description: Property listing catalog operations
+
+paths:
+  /properties:
+    get:
+      operationId: listProperties
+      tags: [properties]
+      summary: Search property listings
+      description: >-
+        Returns a paginated list of ACTIVE property listings that match the
+        supplied filters. Used by buyer/renter search experiences.
+      parameters:
+        - name: city
+          in: query
+          schema: { type: string }
+          description: Filter by city name (case-insensitive, partial match).
+        - name: propertyType
+          in: query
+          schema: { $ref: "#/components/schemas/PropertyType" }
+        - name: listingType
+          in: query
+          schema: { $ref: "#/components/schemas/ListingType" }
+        - name: minPrice
+          in: query
+          schema: { type: number, minimum: 0 }
+        - name: maxPrice
+          in: query
+          schema: { type: number, minimum: 0 }
+        - name: bedrooms
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: status
+          in: query
+          schema: { $ref: "#/components/schemas/PropertyStatus" }
+          description: Defaults to ACTIVE when omitted.
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        "200":
+          description: A page of matching property listings.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PropertyList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+    post:
+      operationId: addProperty
+      tags: [properties]
+      summary: Add a new property to the listing catalog
+      description: >-
+        Creates a new property record. New listings are created in DRAFT
+        status and only become visible to search once published via
+        POST /properties/{propertyId}/publish.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PropertyInput" }
+      responses:
+        "201":
+          description: The property was created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Property" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /properties/available:
+    get:
+      operationId: listAvailableProperties
+      tags: [properties]
+      summary: List all available property listings
+      description: >-
+        Returns a paginated list of all property listings currently in ACTIVE
+        status. Equivalent to GET /properties with status fixed to ACTIVE.
+      parameters:
+        - name: city
+          in: query
+          schema: { type: string }
+          description: Filter by city name (case-insensitive, partial match).
+        - name: propertyType
+          in: query
+          schema: { $ref: "#/components/schemas/PropertyType" }
+        - name: listingType
+          in: query
+          schema: { $ref: "#/components/schemas/ListingType" }
+        - name: minPrice
+          in: query
+          schema: { type: number, minimum: 0 }
+        - name: maxPrice
+          in: query
+          schema: { type: number, minimum: 0 }
+        - name: bedrooms
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        "200":
+          description: A page of available property listings.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PropertyList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /properties/{propertyId}:
+    parameters:
+      - name: propertyId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getPropertyById
+      tags: [properties]
+      summary: Get property details
+      description: Returns the full detail record for a single property listing.
+      responses:
+        "200":
+          description: The requested property.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Property" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+    put:
+      operationId: updateProperty
+      tags: [properties]
+      summary: Update a property listing
+      description: Replaces the mutable fields of an existing property listing.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PropertyInput" }
+      responses:
+        "200":
+          description: The updated property.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Property" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+    delete:
+      operationId: deleteProperty
+      tags: [properties]
+      summary: Remove a property listing
+      description: Permanently delists a property (status DELISTED then removed from the catalog).
+      responses:
+        "204":
+          description: The property was removed.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /properties/{propertyId}/publish:
+    parameters:
+      - name: propertyId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      operationId: publishProperty
+      tags: [properties]
+      summary: Publish a draft listing
+      description: Transitions a property from DRAFT to ACTIVE so it appears in search results.
+      responses:
+        "200":
+          description: The published property.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Property" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+components:
+  schemas:
+    PropertyType:
+      type: string
+      enum: [APARTMENT, HOUSE, VILLA, LAND, COMMERCIAL]
+    ListingType:
+      type: string
+      enum: [SALE, RENT]
+    PropertyStatus:
+      type: string
+      enum: [DRAFT, ACTIVE, UNDER_OFFER, SOLD, RENTED, DELISTED]
+    Money:
+      type: object
+      required: [amount, currency]
+      properties:
+        amount: { type: number, minimum: 0 }
+        currency: { type: string, example: USD }
+    Address:
+      type: object
+      required: [line1, city, country]
+      properties:
+        line1: { type: string }
+        line2: { type: string }
+        city: { type: string }
+        region: { type: string }
+        country: { type: string }
+        postalCode: { type: string }
+    PropertyInput:
+      type: object
+      required: [title, propertyType, listingType, price, address, agentId]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        propertyType: { $ref: "#/components/schemas/PropertyType" }
+        listingType: { $ref: "#/components/schemas/ListingType" }
+        status: { $ref: "#/components/schemas/PropertyStatus" }
+        price: { $ref: "#/components/schemas/Money" }
+        address: { $ref: "#/components/schemas/Address" }
+        bedrooms: { type: integer, minimum: 0 }
+        bathrooms: { type: integer, minimum: 0 }
+        areaSqm: { type: number, minimum: 0 }
+        agentId: { type: string }
+    Property:
+      allOf:
+        - $ref: "#/components/schemas/PropertyInput"
+        - type: object
+          required: [id, status, createdAt, updatedAt]
+          properties:
+            id: { type: string }
+            status: { $ref: "#/components/schemas/PropertyStatus" }
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+    PropertyList:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Property" }
+        total: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: array
+          items: { type: string }
+    RateLimitError:
+      type: object
+      required: [code, message, retryAfterSeconds]
+      properties:
+        code: { type: string, example: RATE_LIMIT_EXCEEDED }
+        message: { type: string }
+        retryAfterSeconds: { type: integer }
+  responses:
+    BadRequest:
+      description: The request was malformed.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Unauthorized:
+      description: The request lacks valid authentication credentials.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: No property was found for the supplied identifier.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: The property is not in a state that allows this operation.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ValidationError:
+      description: The request payload failed validation rules.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    TooManyRequests:
+      description: The client has exceeded the allowed request rate.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/RateLimitError" }
+    ServerError:
+      description: An unexpected internal error occurred.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - BearerAuth: []

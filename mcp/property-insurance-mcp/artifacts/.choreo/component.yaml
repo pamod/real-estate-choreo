@@ -1,0 +1,27 @@
+schemaVersion: 1.2
+
+endpoints:
+  - name: property-insurance-mcp
+    displayName: Property Insurance MCP Server
+    service:
+      basePath: /
+      port: 5000
+    type: REST
+    networkVisibilities:
+      - Project
+      - Organization
+
+configurations:
+  env:
+    - name: INSURANCE_SERVICE_BASE_URL
+      valueFrom:
+        configForm:
+          displayName: Property Insurance Service base URL
+          required: true
+          type: string
+    - name: PROPERTY_BEARERAUTH_TOKEN
+      valueFrom:
+        configForm:
+          displayName: Bearer token sent to the Property Insurance Service (any non-empty value — the mock backend only checks it's present)
+          required: true
+          type: secret

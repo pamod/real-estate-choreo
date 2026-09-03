@@ -1,0 +1,394 @@
+openapi: 3.0.4
+info:
+  title: Property Insurance Coverage Service
+  description: >-
+    Represents insurance coverage for real-estate properties: browsing
+    available coverage plans, quoting and issuing policies, looking up a
+    property's active coverage, and filing/tracking claims.
+  version: 1.0.0
+  contact:
+    name: WSO2 AfricaCon 2026 Demo
+servers:
+  - url: http://localhost:9092
+    description: Local mock backend
+    x-internal: false
+tags:
+  - name: coverage
+    description: Coverage plan catalog
+  - name: quotes
+    description: Premium quoting
+  - name: policies
+    description: Issued insurance policies
+  - name: claims
+    description: Claims against an issued policy
+
+paths:
+  /coverage-plans:
+    get:
+      operationId: listCoveragePlans
+      tags: [coverage]
+      summary: List available coverage plans
+      description: Returns the catalog of coverage types that can be quoted against a property.
+      responses:
+        "200":
+          description: Available coverage plans.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CoveragePlan" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /quotes:
+    post:
+      operationId: createQuote
+      tags: [quotes]
+      summary: Request a coverage quote for a property
+      description: >-
+        Prices a premium for the given property and coverage type. The
+        returned quote is valid for 30 days and can be converted into an
+        issued policy via POST /policies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/QuoteInput" }
+      responses:
+        "201":
+          description: The generated quote.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Quote" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /quotes/{quoteId}:
+    parameters:
+      - name: quoteId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getQuoteById
+      tags: [quotes]
+      summary: Get quote details
+      responses:
+        "200":
+          description: The requested quote.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Quote" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /policies:
+    post:
+      operationId: createPolicy
+      tags: [policies]
+      summary: Issue a policy from an accepted quote
+      description: Binds coverage by converting a not-yet-expired quote into an active policy.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quoteId]
+              properties:
+                quoteId: { type: string }
+      responses:
+        "201":
+          description: The issued policy.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Policy" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /policies/{policyId}:
+    parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getPolicyById
+      tags: [policies]
+      summary: Get policy/coverage details
+      responses:
+        "200":
+          description: The requested policy.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Policy" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /policies/{policyId}/claims:
+    parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: listClaimsForPolicy
+      tags: [claims]
+      summary: List claims filed against a policy
+      responses:
+        "200":
+          description: Claims filed against this policy.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Claim" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /properties/{propertyId}/policy:
+    parameters:
+      - name: propertyId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getPolicyByProperty
+      tags: [policies]
+      summary: Get the active coverage for a property
+      description: Resolves the currently active policy that covers the given property, if any.
+      responses:
+        "200":
+          description: The property's active policy.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Policy" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /claims:
+    post:
+      operationId: fileClaim
+      tags: [claims]
+      summary: File a claim against a policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClaimInput" }
+      responses:
+        "201":
+          description: The filed claim.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Claim" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  /claims/{claimId}:
+    parameters:
+      - name: claimId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getClaimById
+      tags: [claims]
+      summary: Get claim status and details
+      responses:
+        "200":
+          description: The requested claim.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Claim" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+    put:
+      operationId: updateClaimStatus
+      tags: [claims]
+      summary: Update a claim's status (adjuster action)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { $ref: "#/components/schemas/ClaimStatus" }
+                adjusterNotes: { type: string }
+                approvedAmount: { type: number }
+      responses:
+        "200":
+          description: The updated claim.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Claim" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+        "429": { $ref: "#/components/responses/TooManyRequests" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+components:
+  schemas:
+    CoverageType:
+      type: string
+      enum: [FIRE, FLOOD, ALL_RISK, LIABILITY, THEFT]
+    ClaimStatus:
+      type: string
+      enum: [SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED, PAID]
+    Money:
+      type: object
+      required: [amount, currency]
+      properties:
+        amount: { type: number, minimum: 0 }
+        currency: { type: string, example: USD }
+    CoveragePlan:
+      type: object
+      required: [coverageType, name, description, basePremiumRate]
+      properties:
+        coverageType: { $ref: "#/components/schemas/CoverageType" }
+        name: { type: string }
+        description: { type: string }
+        basePremiumRate:
+          type: number
+          description: Annual premium rate as a fraction of insured property value.
+    QuoteInput:
+      type: object
+      required: [propertyId, propertyValue, propertyType, coverageType]
+      properties:
+        propertyId: { type: string }
+        propertyValue: { type: number, minimum: 0 }
+        propertyType:
+          type: string
+          enum: [APARTMENT, HOUSE, VILLA, LAND, COMMERCIAL]
+        coverageType: { $ref: "#/components/schemas/CoverageType" }
+        constructionYear: { type: integer }
+    Quote:
+      allOf:
+        - $ref: "#/components/schemas/QuoteInput"
+        - type: object
+          required: [id, premium, validUntil, createdAt]
+          properties:
+            id: { type: string }
+            premium: { $ref: "#/components/schemas/Money" }
+            validUntil: { type: string, format: date-time }
+            createdAt: { type: string, format: date-time }
+    Policy:
+      type: object
+      required: [id, policyNumber, propertyId, coverageType, insuredValue, premium, status, startDate, endDate]
+      properties:
+        id: { type: string }
+        policyNumber: { type: string }
+        propertyId: { type: string }
+        quoteId: { type: string }
+        coverageType: { $ref: "#/components/schemas/CoverageType" }
+        insuredValue: { $ref: "#/components/schemas/Money" }
+        premium: { $ref: "#/components/schemas/Money" }
+        status: { type: string, enum: [ACTIVE, LAPSED, CANCELLED] }
+        startDate: { type: string, format: date-time }
+        endDate: { type: string, format: date-time }
+    ClaimInput:
+      type: object
+      required: [policyId, incidentDate, incidentType, claimedAmount]
+      properties:
+        policyId: { type: string }
+        incidentDate: { type: string, format: date }
+        incidentType: { type: string }
+        description: { type: string }
+        claimedAmount: { type: number, minimum: 0 }
+    Claim:
+      allOf:
+        - $ref: "#/components/schemas/ClaimInput"
+        - type: object
+          required: [id, status, createdAt, updatedAt]
+          properties:
+            id: { type: string }
+            status: { $ref: "#/components/schemas/ClaimStatus" }
+            adjusterNotes: { type: string }
+            approvedAmount: { type: number }
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: array
+          items: { type: string }
+    RateLimitError:
+      type: object
+      required: [code, message, retryAfterSeconds]
+      properties:
+        code: { type: string, example: RATE_LIMIT_EXCEEDED }
+        message: { type: string }
+        retryAfterSeconds: { type: integer }
+  responses:
+    BadRequest:
+      description: The request was malformed.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Unauthorized:
+      description: The request lacks valid authentication credentials.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: No resource was found for the supplied identifier.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: The resource is not in a state that allows this operation.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ValidationError:
+      description: The request payload failed validation rules.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    TooManyRequests:
+      description: The client has exceeded the allowed request rate.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/RateLimitError" }
+    ServerError:
+      description: An unexpected internal error occurred.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - BearerAuth: []

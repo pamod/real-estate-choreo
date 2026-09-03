@@ -1,0 +1,13 @@
+{
+  "name": "property-listing-service",
+  "version": "1.0.0",
+  "description": "Mock backend for the Property Listing Service OpenAPI contract",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

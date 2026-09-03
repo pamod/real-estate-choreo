@@ -1,0 +1,2654 @@
+{
+  "meta": {
+    "specFile": "/Users/pamod/Desktop/prop-mgt/real-estate/services/property-insurance-service/openapi.yaml",
+    "assessedAt": "2026-09-02T04:29:13.981Z",
+    "guidelinesVersion": "agent-readiness-guidelines.md",
+    "model": "copilot",
+    "specHash": "f1b87a9e38cf3c1084ce86bb4f1addcfb047d12215d351cf8765cb226706b14a"
+  },
+  "securityReadiness": {
+    "spectral": {
+      "status": "completed",
+      "ruleset": "references/owasp-top-10-raw.yaml",
+      "score": {
+        "critical": 2,
+        "high": 6,
+        "medium": 0,
+        "low": 0,
+        "rating": "Fair"
+      },
+      "issues": [
+        {
+          "id": "spec-001",
+          "severity": "CRITICAL",
+          "rule": "owasp:api8:2023-no-server-http",
+          "path": "servers.0.url",
+          "issue": "Server URLs must not use http://. Use https:// or wss:// instead.",
+          "description": "Server interactions must not use the http:// as it's inherently insecure and can lead to PII and other sensitive information being leaked through traffic sniffing or man-in-the-middle attacks. Use https:// or wss:// protocols instead.\n\nLearn more about the importance of TLS (over SSL) here: [https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html](https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html)",
+          "fixSuggestion": "Change every `servers[].url` to `https://` (or `wss://` for WebSockets); avoid plain `http://` in any environment, including “internal” servers documented in the spec.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-002",
+          "severity": "HIGH",
+          "rule": "owasp:api8:2023-define-error-validation",
+          "path": "paths./coverage-plans.get.responses",
+          "issue": "Missing error response of either 400, 422 or 4XX.",
+          "description": "Carefully define schemas for all the API responses, including either 400, 422 or 4XX responses which describe errors caused by invalid requests.",
+          "fixSuggestion": "For each operation, document at least one client-error response: `400` or `422` with a body schema, or a shared `4XX` response, so validation failures are part of the contract and testable.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-003",
+          "severity": "HIGH",
+          "rule": "owasp:api8:2023-define-error-validation",
+          "path": "paths./quotes/{quoteId}.get.responses",
+          "issue": "Missing error response of either 400, 422 or 4XX.",
+          "description": "Carefully define schemas for all the API responses, including either 400, 422 or 4XX responses which describe errors caused by invalid requests.",
+          "fixSuggestion": "For each operation, document at least one client-error response: `400` or `422` with a body schema, or a shared `4XX` response, so validation failures are part of the contract and testable.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-004",
+          "severity": "HIGH",
+          "rule": "owasp:api8:2023-define-error-validation",
+          "path": "paths./policies/{policyId}.get.responses",
+          "issue": "Missing error response of either 400, 422 or 4XX.",
+          "description": "Carefully define schemas for all the API responses, including either 400, 422 or 4XX responses which describe errors caused by invalid requests.",
+          "fixSuggestion": "For each operation, document at least one client-error response: `400` or `422` with a body schema, or a shared `4XX` response, so validation failures are part of the contract and testable.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-005",
+          "severity": "HIGH",
+          "rule": "owasp:api8:2023-define-error-validation",
+          "path": "paths./policies/{policyId}/claims.get.responses",
+          "issue": "Missing error response of either 400, 422 or 4XX.",
+          "description": "Carefully define schemas for all the API responses, including either 400, 422 or 4XX responses which describe errors caused by invalid requests.",
+          "fixSuggestion": "For each operation, document at least one client-error response: `400` or `422` with a body schema, or a shared `4XX` response, so validation failures are part of the contract and testable.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-006",
+          "severity": "HIGH",
+          "rule": "owasp:api8:2023-define-error-validation",
+          "path": "paths./properties/{propertyId}/policy.get.responses",
+          "issue": "Missing error response of either 400, 422 or 4XX.",
+          "description": "Carefully define schemas for all the API responses, including either 400, 422 or 4XX responses which describe errors caused by invalid requests.",
+          "fixSuggestion": "For each operation, document at least one client-error response: `400` or `422` with a body schema, or a shared `4XX` response, so validation failures are part of the contract and testable.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-007",
+          "severity": "HIGH",
+          "rule": "owasp:api8:2023-define-error-validation",
+          "path": "paths./claims/{claimId}.get.responses",
+          "issue": "Missing error response of either 400, 422 or 4XX.",
+          "description": "Carefully define schemas for all the API responses, including either 400, 422 or 4XX responses which describe errors caused by invalid requests.",
+          "fixSuggestion": "For each operation, document at least one client-error response: `400` or `422` with a body schema, or a shared `4XX` response, so validation failures are part of the contract and testable.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-008",
+          "severity": "CRITICAL",
+          "rule": "owasp:api2:2023-jwt-best-practices",
+          "path": "components.securitySchemes.BearerAuth",
+          "issue": "Security schemes using JWTs must explicitly declare support for RFC8725 in the description.",
+          "description": "JSON Web Tokens RFC7519 is a compact, URL-safe, means of representing claims to be transferred between two parties. JWT can be enclosed in encrypted or signed tokens like JWS and JWE.\n\nThe [JOSE IANA registry](https://www.iana.org/assignments/jose/jose.xhtml) provides algorithms information.\n\nRFC8725 describes common pitfalls in the JWx specifications and in\ntheir implementations, such as:\n- the ability to ignore algorithms, eg. `{\"alg\": \"none\"}`;\n- using insecure algorithms like `RSASSA-PKCS1-v1_5` eg. `{\"alg\": \"RS256\"}`.\nAn API using JWT should explicit in the `description`\nthat the implementation conforms to RFC8725.\n```\ncomponents:\n  securitySchemes:\n    JWTBearer:\n      type: http\n      scheme: bearer\n      bearerFormat: JWT\n      description: |-\n        A bearer token in the format of a JWS and conformato\n        to the specifications included in RFC8725.\n```",
+          "fixSuggestion": "On each affected OAuth2 or JWT bearer `securitySchemes` entry, set a non-empty `description` that explicitly states conformance to RFC 8725 (e.g. algorithm allowlists, signature validation, and rejection of \"none\" / weak algorithms).",
+          "autoFixable": true
+        }
+      ]
+    }
+  },
+  "agentReadiness": {
+    "spectral": {
+      "status": "completed",
+      "ruleset": "references/agent-readiness-spectral/ai-readiness.yaml",
+      "score": {
+        "critical": 3,
+        "high": 233,
+        "medium": 0,
+        "low": 0,
+        "rating": "Poor"
+      },
+      "issues": [
+        {
+          "id": "spec-001",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims.post.responses.400.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-002",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims.post.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-003",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims.post.responses.404.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-004",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims.post.responses.422.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-005",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims.post.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-006",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims.post.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-007",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.get.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-008",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.get.responses.404.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-009",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.get.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-010",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.get.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-011",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.put.responses.400.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-012",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.put.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-013",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.put.responses.404.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-014",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.put.responses.422.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-015",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.put.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-016",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./claims/{claimId}.put.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-017",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./coverage-plans.get.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-018",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./coverage-plans.get.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-019",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./coverage-plans.get.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-020",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies.post.responses.400.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-021",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies.post.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-022",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies.post.responses.404.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-023",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies.post.responses.409.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-024",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies.post.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-025",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies.post.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-026",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies/{policyId}.get.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-027",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies/{policyId}.get.responses.404.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-028",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies/{policyId}.get.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-029",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies/{policyId}.get.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-030",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies/{policyId}/claims.get.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-031",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies/{policyId}/claims.get.responses.404.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-032",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies/{policyId}/claims.get.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-033",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./policies/{policyId}/claims.get.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-034",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./properties/{propertyId}/policy.get.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-035",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./properties/{propertyId}/policy.get.responses.404.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-036",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./properties/{propertyId}/policy.get.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-037",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./properties/{propertyId}/policy.get.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-038",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes.post.responses.400.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-039",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes.post.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-040",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes.post.responses.422.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-041",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes.post.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-042",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes.post.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-043",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes/{quoteId}.get.responses.401.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-044",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes/{quoteId}.get.responses.404.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-045",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes/{quoteId}.get.responses.429.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-046",
+          "severity": "HIGH",
+          "rule": "ai-readiness-error-schema-rfc7807",
+          "path": "paths./quotes/{quoteId}.get.responses.500.content.application/json.schema",
+          "issue": "Error schema should include 'type', 'title', and 'detail' fields per RFC 7807 for rich AI error semantics",
+          "description": "Error responses should follow RFC 7807 problem detail structure",
+          "fixSuggestion": "Model errors as Problem Details: `type` (URI), `title`, `detail`, optional `instance` — or $ref a component schema that matches RFC 7807.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-047",
+          "severity": "HIGH",
+          "rule": "ai-readiness-tags-external-docs",
+          "path": "tags.0",
+          "issue": "Tag '' should have external documentation for AI learning",
+          "description": "Tags should have external documentation links",
+          "fixSuggestion": "Add `externalDocs` with a URL to deeper docs, tutorials, or domain context for that tag.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-048",
+          "severity": "HIGH",
+          "rule": "ai-readiness-tags-external-docs",
+          "path": "tags.1",
+          "issue": "Tag '' should have external documentation for AI learning",
+          "description": "Tags should have external documentation links",
+          "fixSuggestion": "Add `externalDocs` with a URL to deeper docs, tutorials, or domain context for that tag.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-049",
+          "severity": "HIGH",
+          "rule": "ai-readiness-tags-external-docs",
+          "path": "tags.2",
+          "issue": "Tag '' should have external documentation for AI learning",
+          "description": "Tags should have external documentation links",
+          "fixSuggestion": "Add `externalDocs` with a URL to deeper docs, tutorials, or domain context for that tag.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-050",
+          "severity": "HIGH",
+          "rule": "ai-readiness-tags-external-docs",
+          "path": "tags.3",
+          "issue": "Tag '' should have external documentation for AI learning",
+          "description": "Tags should have external documentation links",
+          "fixSuggestion": "Add `externalDocs` with a URL to deeper docs, tutorials, or domain context for that tag.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-051",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./coverage-plans",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-052",
+          "severity": "HIGH",
+          "rule": "ai-readiness-list-pagination-params",
+          "path": "paths./coverage-plans.get",
+          "issue": "GET operation should declare pagination parameters (cursor/page and limit) for AI agent iteration over large result sets",
+          "description": "GET operations should support standard pagination parameters",
+          "fixSuggestion": "Add query parameters such as `limit` plus `cursor` or `page` (and document defaults and max) on list-style GETs.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-053",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./coverage-plans.get.responses.200.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-054",
+          "severity": "HIGH",
+          "rule": "ai-readiness-pagination-response-meta",
+          "path": "paths./coverage-plans.get.responses.200.content.application/json.schema",
+          "issue": "GET list operation response schema should include pagination metadata (has_more, next_cursor, or total) so AI agents know when to stop paginating",
+          "description": "List endpoint responses must include pagination metadata",
+          "fixSuggestion": "Expose at least one of `has_more`, `next_cursor`/`next_page`, or `total` in the JSON body schema for paginated lists.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-055",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./coverage-plans.get.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-056",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./quotes",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-057",
+          "severity": "HIGH",
+          "rule": "ai-readiness-idempotency-key",
+          "path": "paths./quotes.post",
+          "issue": "POST/PATCH operation should declare an Idempotency-Key header parameter to prevent duplicate side-effects on AI agent retries",
+          "description": "Mutating operations should support idempotency for safe AI agent retries",
+          "fixSuggestion": "Add a header parameter `Idempotency-Key` (string) and document server behavior: same key → same effective outcome, safe retries.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-058",
+          "severity": "HIGH",
+          "rule": "ai-readiness-security-on-mutating-ops",
+          "path": "paths./quotes.post",
+          "issue": "Operation does not declare security requirements — AI agents need explicit security constraints to avoid unintended state changes",
+          "description": "Mutating operations should declare explicit security requirements",
+          "fixSuggestion": "Set `security` on POST/PUT/PATCH/DELETE (or inherit from root `security`) so it is clear which auth applies when mutating state.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-059",
+          "severity": "HIGH",
+          "rule": "ai-readiness-request-body-description",
+          "path": "paths./quotes.post.requestBody",
+          "issue": "Request body description must be present and at least 20 characters for AI readiness",
+          "description": "Request bodies must have meaningful descriptions",
+          "fixSuggestion": "Describe `requestBody` purpose, required fields, and semantic meaning for each `POST`/`PUT`/`PATCH` operation — at least 20 characters.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-060",
+          "severity": "HIGH",
+          "rule": "ai-readiness-request-body-example",
+          "path": "paths./quotes.post.requestBody.content.application/json",
+          "issue": "Request body for 'application/json' should have an example for AI understanding",
+          "description": "Request bodies should have examples",
+          "fixSuggestion": "Add an `example` (or `examples`) under the request body's media type content so agents can mirror a valid JSON payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-061",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./quotes.post.responses.201.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-062",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-schema-typed",
+          "path": "paths./quotes.post.responses.201.content.application/json.schema",
+          "issue": "Response schema should have an explicit type so AI agents can parse response payloads",
+          "description": "Response schemas must have explicit types",
+          "fixSuggestion": "Ensure each response `schema` has explicit `type` or a composition of typed schemas (not an empty object).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-063",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./quotes.post.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-064",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./quotes/{quoteId}",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-065",
+          "severity": "HIGH",
+          "rule": "ai-readiness-parameter-example",
+          "path": "paths./quotes/{quoteId}.parameters.0",
+          "issue": "Parameter '' should have an example for AI understanding",
+          "description": "Parameters should have examples for AI understanding",
+          "fixSuggestion": "Add `example` or `examples` on query, path, header, and cookie parameters so agents can send realistic values.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-066",
+          "severity": "HIGH",
+          "rule": "ai-readiness-list-pagination-params",
+          "path": "paths./quotes/{quoteId}.get",
+          "issue": "GET operation should declare pagination parameters (cursor/page and limit) for AI agent iteration over large result sets",
+          "description": "GET operations should support standard pagination parameters",
+          "fixSuggestion": "Add query parameters such as `limit` plus `cursor` or `page` (and document defaults and max) on list-style GETs.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-067",
+          "severity": "HIGH",
+          "rule": "ai-readiness-operation-description",
+          "path": "paths./quotes/{quoteId}.get",
+          "issue": "Operation 'get' description must be present and at least 30 characters for AI readiness",
+          "description": "All operations must have a detailed description",
+          "fixSuggestion": "Write at least 30 characters in `description`: inputs, outcomes, idempotency, and notable errors or side effects.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-068",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./quotes/{quoteId}.get.responses.200.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-069",
+          "severity": "HIGH",
+          "rule": "ai-readiness-pagination-response-meta",
+          "path": "paths./quotes/{quoteId}.get.responses.200.content.application/json.schema",
+          "issue": "GET list operation response schema should include pagination metadata (has_more, next_cursor, or total) so AI agents know when to stop paginating",
+          "description": "List endpoint responses must include pagination metadata",
+          "fixSuggestion": "Expose at least one of `has_more`, `next_cursor`/`next_page`, or `total` in the JSON body schema for paginated lists.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-070",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-schema-typed",
+          "path": "paths./quotes/{quoteId}.get.responses.200.content.application/json.schema",
+          "issue": "Response schema should have an explicit type so AI agents can parse response payloads",
+          "description": "Response schemas must have explicit types",
+          "fixSuggestion": "Ensure each response `schema` has explicit `type` or a composition of typed schemas (not an empty object).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-071",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./quotes/{quoteId}.get.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-072",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./policies",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-073",
+          "severity": "HIGH",
+          "rule": "ai-readiness-idempotency-key",
+          "path": "paths./policies.post",
+          "issue": "POST/PATCH operation should declare an Idempotency-Key header parameter to prevent duplicate side-effects on AI agent retries",
+          "description": "Mutating operations should support idempotency for safe AI agent retries",
+          "fixSuggestion": "Add a header parameter `Idempotency-Key` (string) and document server behavior: same key → same effective outcome, safe retries.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-074",
+          "severity": "HIGH",
+          "rule": "ai-readiness-security-on-mutating-ops",
+          "path": "paths./policies.post",
+          "issue": "Operation does not declare security requirements — AI agents need explicit security constraints to avoid unintended state changes",
+          "description": "Mutating operations should declare explicit security requirements",
+          "fixSuggestion": "Set `security` on POST/PUT/PATCH/DELETE (or inherit from root `security`) so it is clear which auth applies when mutating state.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-075",
+          "severity": "HIGH",
+          "rule": "ai-readiness-request-body-description",
+          "path": "paths./policies.post.requestBody",
+          "issue": "Request body description must be present and at least 20 characters for AI readiness",
+          "description": "Request bodies must have meaningful descriptions",
+          "fixSuggestion": "Describe `requestBody` purpose, required fields, and semantic meaning for each `POST`/`PUT`/`PATCH` operation — at least 20 characters.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-076",
+          "severity": "HIGH",
+          "rule": "ai-readiness-request-body-example",
+          "path": "paths./policies.post.requestBody.content.application/json",
+          "issue": "Request body for 'application/json' should have an example for AI understanding",
+          "description": "Request bodies should have examples",
+          "fixSuggestion": "Add an `example` (or `examples`) under the request body's media type content so agents can mirror a valid JSON payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-077",
+          "severity": "CRITICAL",
+          "rule": "ai-readiness-response-description",
+          "path": "paths./policies.post.responses.201",
+          "issue": "Response '201' description must be present and at least 20 characters for AI readiness",
+          "description": "All responses must have meaningful descriptions",
+          "fixSuggestion": "Add a `description` (≥20 chars) to each response code explaining when it is returned, what the body represents, and what the client should do.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-078",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./policies.post.responses.201.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-079",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./policies.post.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-080",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./policies/{policyId}",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-081",
+          "severity": "HIGH",
+          "rule": "ai-readiness-parameter-example",
+          "path": "paths./policies/{policyId}.parameters.0",
+          "issue": "Parameter '' should have an example for AI understanding",
+          "description": "Parameters should have examples for AI understanding",
+          "fixSuggestion": "Add `example` or `examples` on query, path, header, and cookie parameters so agents can send realistic values.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-082",
+          "severity": "HIGH",
+          "rule": "ai-readiness-list-pagination-params",
+          "path": "paths./policies/{policyId}.get",
+          "issue": "GET operation should declare pagination parameters (cursor/page and limit) for AI agent iteration over large result sets",
+          "description": "GET operations should support standard pagination parameters",
+          "fixSuggestion": "Add query parameters such as `limit` plus `cursor` or `page` (and document defaults and max) on list-style GETs.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-083",
+          "severity": "HIGH",
+          "rule": "ai-readiness-operation-description",
+          "path": "paths./policies/{policyId}.get",
+          "issue": "Operation 'get' description must be present and at least 30 characters for AI readiness",
+          "description": "All operations must have a detailed description",
+          "fixSuggestion": "Write at least 30 characters in `description`: inputs, outcomes, idempotency, and notable errors or side effects.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-084",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./policies/{policyId}.get.responses.200.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-085",
+          "severity": "HIGH",
+          "rule": "ai-readiness-pagination-response-meta",
+          "path": "paths./policies/{policyId}.get.responses.200.content.application/json.schema",
+          "issue": "GET list operation response schema should include pagination metadata (has_more, next_cursor, or total) so AI agents know when to stop paginating",
+          "description": "List endpoint responses must include pagination metadata",
+          "fixSuggestion": "Expose at least one of `has_more`, `next_cursor`/`next_page`, or `total` in the JSON body schema for paginated lists.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-086",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./policies/{policyId}.get.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-087",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./policies/{policyId}/claims",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-088",
+          "severity": "HIGH",
+          "rule": "ai-readiness-parameter-example",
+          "path": "paths./policies/{policyId}/claims.parameters.0",
+          "issue": "Parameter '' should have an example for AI understanding",
+          "description": "Parameters should have examples for AI understanding",
+          "fixSuggestion": "Add `example` or `examples` on query, path, header, and cookie parameters so agents can send realistic values.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-089",
+          "severity": "HIGH",
+          "rule": "ai-readiness-list-pagination-params",
+          "path": "paths./policies/{policyId}/claims.get",
+          "issue": "GET operation should declare pagination parameters (cursor/page and limit) for AI agent iteration over large result sets",
+          "description": "GET operations should support standard pagination parameters",
+          "fixSuggestion": "Add query parameters such as `limit` plus `cursor` or `page` (and document defaults and max) on list-style GETs.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-090",
+          "severity": "HIGH",
+          "rule": "ai-readiness-operation-description",
+          "path": "paths./policies/{policyId}/claims.get",
+          "issue": "Operation 'get' description must be present and at least 30 characters for AI readiness",
+          "description": "All operations must have a detailed description",
+          "fixSuggestion": "Write at least 30 characters in `description`: inputs, outcomes, idempotency, and notable errors or side effects.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-091",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./policies/{policyId}/claims.get.responses.200.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-092",
+          "severity": "HIGH",
+          "rule": "ai-readiness-pagination-response-meta",
+          "path": "paths./policies/{policyId}/claims.get.responses.200.content.application/json.schema",
+          "issue": "GET list operation response schema should include pagination metadata (has_more, next_cursor, or total) so AI agents know when to stop paginating",
+          "description": "List endpoint responses must include pagination metadata",
+          "fixSuggestion": "Expose at least one of `has_more`, `next_cursor`/`next_page`, or `total` in the JSON body schema for paginated lists.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-093",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./policies/{policyId}/claims.get.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-094",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./properties/{propertyId}/policy",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-095",
+          "severity": "HIGH",
+          "rule": "ai-readiness-parameter-example",
+          "path": "paths./properties/{propertyId}/policy.parameters.0",
+          "issue": "Parameter '' should have an example for AI understanding",
+          "description": "Parameters should have examples for AI understanding",
+          "fixSuggestion": "Add `example` or `examples` on query, path, header, and cookie parameters so agents can send realistic values.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-096",
+          "severity": "HIGH",
+          "rule": "ai-readiness-list-pagination-params",
+          "path": "paths./properties/{propertyId}/policy.get",
+          "issue": "GET operation should declare pagination parameters (cursor/page and limit) for AI agent iteration over large result sets",
+          "description": "GET operations should support standard pagination parameters",
+          "fixSuggestion": "Add query parameters such as `limit` plus `cursor` or `page` (and document defaults and max) on list-style GETs.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-097",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./properties/{propertyId}/policy.get.responses.200.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-098",
+          "severity": "HIGH",
+          "rule": "ai-readiness-pagination-response-meta",
+          "path": "paths./properties/{propertyId}/policy.get.responses.200.content.application/json.schema",
+          "issue": "GET list operation response schema should include pagination metadata (has_more, next_cursor, or total) so AI agents know when to stop paginating",
+          "description": "List endpoint responses must include pagination metadata",
+          "fixSuggestion": "Expose at least one of `has_more`, `next_cursor`/`next_page`, or `total` in the JSON body schema for paginated lists.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-099",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./properties/{propertyId}/policy.get.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-100",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./claims",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-101",
+          "severity": "HIGH",
+          "rule": "ai-readiness-idempotency-key",
+          "path": "paths./claims.post",
+          "issue": "POST/PATCH operation should declare an Idempotency-Key header parameter to prevent duplicate side-effects on AI agent retries",
+          "description": "Mutating operations should support idempotency for safe AI agent retries",
+          "fixSuggestion": "Add a header parameter `Idempotency-Key` (string) and document server behavior: same key → same effective outcome, safe retries.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-102",
+          "severity": "HIGH",
+          "rule": "ai-readiness-operation-description",
+          "path": "paths./claims.post",
+          "issue": "Operation 'post' description must be present and at least 30 characters for AI readiness",
+          "description": "All operations must have a detailed description",
+          "fixSuggestion": "Write at least 30 characters in `description`: inputs, outcomes, idempotency, and notable errors or side effects.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-103",
+          "severity": "HIGH",
+          "rule": "ai-readiness-security-on-mutating-ops",
+          "path": "paths./claims.post",
+          "issue": "Operation does not declare security requirements — AI agents need explicit security constraints to avoid unintended state changes",
+          "description": "Mutating operations should declare explicit security requirements",
+          "fixSuggestion": "Set `security` on POST/PUT/PATCH/DELETE (or inherit from root `security`) so it is clear which auth applies when mutating state.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-104",
+          "severity": "HIGH",
+          "rule": "ai-readiness-request-body-description",
+          "path": "paths./claims.post.requestBody",
+          "issue": "Request body description must be present and at least 20 characters for AI readiness",
+          "description": "Request bodies must have meaningful descriptions",
+          "fixSuggestion": "Describe `requestBody` purpose, required fields, and semantic meaning for each `POST`/`PUT`/`PATCH` operation — at least 20 characters.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-105",
+          "severity": "HIGH",
+          "rule": "ai-readiness-request-body-example",
+          "path": "paths./claims.post.requestBody.content.application/json",
+          "issue": "Request body for 'application/json' should have an example for AI understanding",
+          "description": "Request bodies should have examples",
+          "fixSuggestion": "Add an `example` (or `examples`) under the request body's media type content so agents can mirror a valid JSON payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-106",
+          "severity": "CRITICAL",
+          "rule": "ai-readiness-response-description",
+          "path": "paths./claims.post.responses.201",
+          "issue": "Response '201' description must be present and at least 20 characters for AI readiness",
+          "description": "All responses must have meaningful descriptions",
+          "fixSuggestion": "Add a `description` (≥20 chars) to each response code explaining when it is returned, what the body represents, and what the client should do.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-107",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./claims.post.responses.201.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-108",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-schema-typed",
+          "path": "paths./claims.post.responses.201.content.application/json.schema",
+          "issue": "Response schema should have an explicit type so AI agents can parse response payloads",
+          "description": "Response schemas must have explicit types",
+          "fixSuggestion": "Ensure each response `schema` has explicit `type` or a composition of typed schemas (not an empty object).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-109",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./claims.post.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-110",
+          "severity": "HIGH",
+          "rule": "ai-readiness-path-item-summary",
+          "path": "paths./claims/{claimId}",
+          "issue": "Path item should include a summary for better AI route understanding",
+          "description": "Path items should have summaries to provide route-level context",
+          "fixSuggestion": "Set `summary` on the path item to describe the resource or route group before drilling into per-method details.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-111",
+          "severity": "HIGH",
+          "rule": "ai-readiness-parameter-example",
+          "path": "paths./claims/{claimId}.parameters.0",
+          "issue": "Parameter '' should have an example for AI understanding",
+          "description": "Parameters should have examples for AI understanding",
+          "fixSuggestion": "Add `example` or `examples` on query, path, header, and cookie parameters so agents can send realistic values.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-112",
+          "severity": "HIGH",
+          "rule": "ai-readiness-list-pagination-params",
+          "path": "paths./claims/{claimId}.get",
+          "issue": "GET operation should declare pagination parameters (cursor/page and limit) for AI agent iteration over large result sets",
+          "description": "GET operations should support standard pagination parameters",
+          "fixSuggestion": "Add query parameters such as `limit` plus `cursor` or `page` (and document defaults and max) on list-style GETs.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-113",
+          "severity": "HIGH",
+          "rule": "ai-readiness-operation-description",
+          "path": "paths./claims/{claimId}.get",
+          "issue": "Operation 'get' description must be present and at least 30 characters for AI readiness",
+          "description": "All operations must have a detailed description",
+          "fixSuggestion": "Write at least 30 characters in `description`: inputs, outcomes, idempotency, and notable errors or side effects.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-114",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./claims/{claimId}.get.responses.200.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-115",
+          "severity": "HIGH",
+          "rule": "ai-readiness-pagination-response-meta",
+          "path": "paths./claims/{claimId}.get.responses.200.content.application/json.schema",
+          "issue": "GET list operation response schema should include pagination metadata (has_more, next_cursor, or total) so AI agents know when to stop paginating",
+          "description": "List endpoint responses must include pagination metadata",
+          "fixSuggestion": "Expose at least one of `has_more`, `next_cursor`/`next_page`, or `total` in the JSON body schema for paginated lists.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-116",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-schema-typed",
+          "path": "paths./claims/{claimId}.get.responses.200.content.application/json.schema",
+          "issue": "Response schema should have an explicit type so AI agents can parse response payloads",
+          "description": "Response schemas must have explicit types",
+          "fixSuggestion": "Ensure each response `schema` has explicit `type` or a composition of typed schemas (not an empty object).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-117",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./claims/{claimId}.get.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-118",
+          "severity": "HIGH",
+          "rule": "ai-readiness-operation-description",
+          "path": "paths./claims/{claimId}.put",
+          "issue": "Operation 'put' description must be present and at least 30 characters for AI readiness",
+          "description": "All operations must have a detailed description",
+          "fixSuggestion": "Write at least 30 characters in `description`: inputs, outcomes, idempotency, and notable errors or side effects.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-119",
+          "severity": "HIGH",
+          "rule": "ai-readiness-security-on-mutating-ops",
+          "path": "paths./claims/{claimId}.put",
+          "issue": "Operation does not declare security requirements — AI agents need explicit security constraints to avoid unintended state changes",
+          "description": "Mutating operations should declare explicit security requirements",
+          "fixSuggestion": "Set `security` on POST/PUT/PATCH/DELETE (or inherit from root `security`) so it is clear which auth applies when mutating state.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-120",
+          "severity": "HIGH",
+          "rule": "ai-readiness-request-body-description",
+          "path": "paths./claims/{claimId}.put.requestBody",
+          "issue": "Request body description must be present and at least 20 characters for AI readiness",
+          "description": "Request bodies must have meaningful descriptions",
+          "fixSuggestion": "Describe `requestBody` purpose, required fields, and semantic meaning for each `POST`/`PUT`/`PATCH` operation — at least 20 characters.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-121",
+          "severity": "HIGH",
+          "rule": "ai-readiness-request-body-example",
+          "path": "paths./claims/{claimId}.put.requestBody.content.application/json",
+          "issue": "Request body for 'application/json' should have an example for AI understanding",
+          "description": "Request bodies should have examples",
+          "fixSuggestion": "Add an `example` (or `examples`) under the request body's media type content so agents can mirror a valid JSON payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-122",
+          "severity": "CRITICAL",
+          "rule": "ai-readiness-response-description",
+          "path": "paths./claims/{claimId}.put.responses.200",
+          "issue": "Response '200' description must be present and at least 20 characters for AI readiness",
+          "description": "All responses must have meaningful descriptions",
+          "fixSuggestion": "Add a `description` (≥20 chars) to each response code explaining when it is returned, what the body represents, and what the client should do.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-123",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-example",
+          "path": "paths./claims/{claimId}.put.responses.200.content.application/json",
+          "issue": "Response should have an example for AI understanding",
+          "description": "Success responses should have examples",
+          "fixSuggestion": "Under each 2xx response media type, add `example` or `examples` for a representative success payload.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-124",
+          "severity": "HIGH",
+          "rule": "ai-readiness-response-schema-typed",
+          "path": "paths./claims/{claimId}.put.responses.200.content.application/json.schema",
+          "issue": "Response schema should have an explicit type so AI agents can parse response payloads",
+          "description": "Response schemas must have explicit types",
+          "fixSuggestion": "Ensure each response `schema` has explicit `type` or a composition of typed schemas (not an empty object).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-125",
+          "severity": "HIGH",
+          "rule": "ai-readiness-429-rate-limit-headers",
+          "path": "paths./claims/{claimId}.put.responses.429",
+          "issue": "429 response must declare Retry-After or X-RateLimit-* headers so AI agents can back off and retry safely",
+          "description": "Rate-limited responses must include retry guidance headers",
+          "fixSuggestion": "Document `Retry-After` and/or `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset` on the 429 response (or link to a header component).",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-126",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.CoverageType",
+          "issue": "Schema 'CoverageType' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-127",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.CoverageType",
+          "issue": "Schema 'CoverageType.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-128",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.ClaimStatus",
+          "issue": "Schema 'ClaimStatus' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-129",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.ClaimStatus",
+          "issue": "Schema 'ClaimStatus.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-130",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.Money",
+          "issue": "Schema 'Money' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-131",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.Money",
+          "issue": "Schema 'Money.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-132",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Money.properties.amount",
+          "issue": "Property 'amount' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-133",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Money.properties.currency",
+          "issue": "Property 'currency' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-134",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Money.properties.currency",
+          "issue": "String property 'currency' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-135",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Money.properties.currency",
+          "issue": "Schema property 'currency' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-136",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.CoveragePlan",
+          "issue": "Schema 'CoveragePlan' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-137",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.CoveragePlan",
+          "issue": "Schema 'CoveragePlan.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-138",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-enum-description",
+          "path": "components.schemas.CoveragePlan.properties.coverageType",
+          "issue": "Enum property 'coverageType' should have a description explaining possible values",
+          "description": "Enum properties should have descriptions explaining possible values",
+          "fixSuggestion": "Describe what each enum value means, or use `x-` extensions / oneOf with titled variants if values are not self-explanatory.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-139",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.CoveragePlan.properties.coverageType",
+          "issue": "Property 'coverageType' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-140",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.CoveragePlan.properties.coverageType",
+          "issue": "String property 'coverageType' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-141",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.CoveragePlan.properties.coverageType",
+          "issue": "Schema property 'coverageType' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-142",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.CoveragePlan.properties.name",
+          "issue": "Property 'name' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-143",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.CoveragePlan.properties.name",
+          "issue": "String property 'name' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-144",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.CoveragePlan.properties.name",
+          "issue": "Schema property 'name' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-145",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.CoveragePlan.properties.description",
+          "issue": "Property 'description' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-146",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.CoveragePlan.properties.description",
+          "issue": "String property 'description' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-147",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.CoveragePlan.properties.description",
+          "issue": "Schema property 'description' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-148",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.CoveragePlan.properties.basePremiumRate",
+          "issue": "Schema property 'basePremiumRate' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-149",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.QuoteInput",
+          "issue": "Schema 'QuoteInput' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-150",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.QuoteInput",
+          "issue": "Schema 'QuoteInput.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-151",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.QuoteInput.properties.propertyId",
+          "issue": "Property 'propertyId' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-152",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.QuoteInput.properties.propertyId",
+          "issue": "String property 'propertyId' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-153",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.QuoteInput.properties.propertyId",
+          "issue": "Schema property 'propertyId' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-154",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.QuoteInput.properties.propertyValue",
+          "issue": "Property 'propertyValue' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-155",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-enum-description",
+          "path": "components.schemas.QuoteInput.properties.propertyType",
+          "issue": "Enum property 'propertyType.description' should have a description explaining possible values",
+          "description": "Enum properties should have descriptions explaining possible values",
+          "fixSuggestion": "Describe what each enum value means, or use `x-` extensions / oneOf with titled variants if values are not self-explanatory.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-156",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.QuoteInput.properties.propertyType",
+          "issue": "Property 'propertyType' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-157",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.QuoteInput.properties.propertyType",
+          "issue": "String property 'propertyType' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-158",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.QuoteInput.properties.propertyType",
+          "issue": "Schema property 'propertyType' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-159",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-enum-description",
+          "path": "components.schemas.QuoteInput.properties.coverageType",
+          "issue": "Enum property 'coverageType' should have a description explaining possible values",
+          "description": "Enum properties should have descriptions explaining possible values",
+          "fixSuggestion": "Describe what each enum value means, or use `x-` extensions / oneOf with titled variants if values are not self-explanatory.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-160",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.QuoteInput.properties.coverageType",
+          "issue": "Property 'coverageType' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-161",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.QuoteInput.properties.coverageType",
+          "issue": "String property 'coverageType' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-162",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.QuoteInput.properties.coverageType",
+          "issue": "Schema property 'coverageType' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-163",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.QuoteInput.properties.constructionYear",
+          "issue": "Property 'constructionYear' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-164",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.QuoteInput.properties.constructionYear",
+          "issue": "Schema property 'constructionYear' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-165",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.Quote",
+          "issue": "Schema 'Quote' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-166",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.Quote",
+          "issue": "Schema 'Quote.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-167",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.Policy",
+          "issue": "Schema 'Policy' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-168",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.Policy",
+          "issue": "Schema 'Policy.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-169",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.id",
+          "issue": "Property 'id' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-170",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Policy.properties.id",
+          "issue": "String property 'id' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-171",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Policy.properties.id",
+          "issue": "Schema property 'id' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-172",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.policyNumber",
+          "issue": "Property 'policyNumber' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-173",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Policy.properties.policyNumber",
+          "issue": "String property 'policyNumber' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-174",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Policy.properties.policyNumber",
+          "issue": "Schema property 'policyNumber' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-175",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.propertyId",
+          "issue": "Property 'propertyId' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-176",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Policy.properties.propertyId",
+          "issue": "String property 'propertyId' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-177",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Policy.properties.propertyId",
+          "issue": "Schema property 'propertyId' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-178",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.quoteId",
+          "issue": "Property 'quoteId' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-179",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Policy.properties.quoteId",
+          "issue": "String property 'quoteId' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-180",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Policy.properties.quoteId",
+          "issue": "Schema property 'quoteId' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-181",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-enum-description",
+          "path": "components.schemas.Policy.properties.coverageType",
+          "issue": "Enum property 'coverageType' should have a description explaining possible values",
+          "description": "Enum properties should have descriptions explaining possible values",
+          "fixSuggestion": "Describe what each enum value means, or use `x-` extensions / oneOf with titled variants if values are not self-explanatory.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-182",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.coverageType",
+          "issue": "Property 'coverageType' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-183",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Policy.properties.coverageType",
+          "issue": "String property 'coverageType' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-184",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Policy.properties.coverageType",
+          "issue": "Schema property 'coverageType' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-185",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.insuredValue",
+          "issue": "Property 'insuredValue' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-186",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.premium",
+          "issue": "Property 'premium' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-187",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-enum-description",
+          "path": "components.schemas.Policy.properties.status",
+          "issue": "Enum property 'status.description' should have a description explaining possible values",
+          "description": "Enum properties should have descriptions explaining possible values",
+          "fixSuggestion": "Describe what each enum value means, or use `x-` extensions / oneOf with titled variants if values are not self-explanatory.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-188",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.status",
+          "issue": "Property 'status' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-189",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Policy.properties.status",
+          "issue": "String property 'status' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-190",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Policy.properties.status",
+          "issue": "Schema property 'status' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-191",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.startDate",
+          "issue": "Property 'startDate' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-192",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Policy.properties.startDate",
+          "issue": "Schema property 'startDate' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-193",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Policy.properties.endDate",
+          "issue": "Property 'endDate' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-194",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Policy.properties.endDate",
+          "issue": "Schema property 'endDate' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-195",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.ClaimInput",
+          "issue": "Schema 'ClaimInput' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-196",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.ClaimInput",
+          "issue": "Schema 'ClaimInput.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-197",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.ClaimInput.properties.policyId",
+          "issue": "Property 'policyId' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-198",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.ClaimInput.properties.policyId",
+          "issue": "String property 'policyId' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-199",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.ClaimInput.properties.policyId",
+          "issue": "Schema property 'policyId' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-200",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.ClaimInput.properties.incidentDate",
+          "issue": "Property 'incidentDate' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-201",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.ClaimInput.properties.incidentDate",
+          "issue": "Schema property 'incidentDate' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-202",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.ClaimInput.properties.incidentType",
+          "issue": "Property 'incidentType' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-203",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.ClaimInput.properties.incidentType",
+          "issue": "String property 'incidentType' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-204",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.ClaimInput.properties.incidentType",
+          "issue": "Schema property 'incidentType' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-205",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.ClaimInput.properties.description",
+          "issue": "Property 'description' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-206",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.ClaimInput.properties.description",
+          "issue": "String property 'description' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-207",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.ClaimInput.properties.description",
+          "issue": "Schema property 'description' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-208",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.ClaimInput.properties.claimedAmount",
+          "issue": "Property 'claimedAmount' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-209",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.Claim",
+          "issue": "Schema 'Claim' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-210",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.Claim",
+          "issue": "Schema 'Claim.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-211",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.Error",
+          "issue": "Schema 'Error' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-212",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.Error",
+          "issue": "Schema 'Error.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-213",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Error.properties.code",
+          "issue": "Property 'code' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-214",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Error.properties.code",
+          "issue": "String property 'code' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-215",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Error.properties.code",
+          "issue": "Schema property 'code' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-216",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Error.properties.message",
+          "issue": "Property 'message' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-217",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.Error.properties.message",
+          "issue": "String property 'message' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-218",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.Error.properties.message",
+          "issue": "Schema property 'message' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-219",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.Error.properties.details",
+          "issue": "Property 'details' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-220",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-example",
+          "path": "components.schemas.RateLimitError",
+          "issue": "Schema 'RateLimitError' should have an example for AI understanding",
+          "description": "Component schemas should have examples",
+          "fixSuggestion": "Add `example` or `examples` at the schema level that validates against the same schema.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-221",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-title",
+          "path": "components.schemas.RateLimitError",
+          "issue": "Schema 'RateLimitError.title' should have a title to help AI agents identify its semantic meaning",
+          "description": "Component schemas should have titles for AI discoverability",
+          "fixSuggestion": "Set `title` to a short human-readable name (e.g. \"UserAccount\") used in generated docs and prompts.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-222",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.RateLimitError.properties.code",
+          "issue": "Property 'code' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-223",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.RateLimitError.properties.code",
+          "issue": "String property 'code' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-224",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.RateLimitError.properties.code",
+          "issue": "Schema property 'code' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-225",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.RateLimitError.properties.message",
+          "issue": "Property 'message' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-226",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-string-format",
+          "path": "components.schemas.RateLimitError.properties.message",
+          "issue": "String property 'message' should use a format modifier (e.g., date-time, email, uuid) for unambiguous AI interpretation",
+          "description": "String properties with semantic meaning should use format modifiers",
+          "fixSuggestion": "Add `format` for strings that are dates, emails, UUIDs, URIs, etc., per OpenAPI/JSON Schema conventions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-227",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.RateLimitError.properties.message",
+          "issue": "Schema property 'message' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-228",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-property-description",
+          "path": "components.schemas.RateLimitError.properties.retryAfterSeconds",
+          "issue": "Property 'retryAfterSeconds' description must be present and at least 10 characters for AI readiness",
+          "description": "Schema properties must have meaningful descriptions",
+          "fixSuggestion": "Document every `properties` entry (≥10 chars): meaning, nullability, and how it relates to other fields.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-229",
+          "severity": "HIGH",
+          "rule": "ai-readiness-schema-validation-constraints",
+          "path": "components.schemas.RateLimitError.properties.retryAfterSeconds",
+          "issue": "Schema property 'retryAfterSeconds' should define constraints (pattern/minLength/maxLength/minimum/maximum) to guide deterministic AI payload generation",
+          "description": "Scalar schema properties should define validation constraints",
+          "fixSuggestion": "Add at least one constraint: `minLength`/`maxLength`/`pattern` for strings, `minimum`/`maximum` for numbers, or `enum` for closed sets.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-230",
+          "severity": "HIGH",
+          "rule": "ai-readiness-component-response-example",
+          "path": "components.responses.BadRequest.content.application/json",
+          "issue": "Component response 'application/json' content should have an example for AI understanding",
+          "description": "Reusable responses in components should have examples",
+          "fixSuggestion": "Add `example` or `examples` under each `components.responses[*].content[*]` media type entry.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-231",
+          "severity": "HIGH",
+          "rule": "ai-readiness-component-response-example",
+          "path": "components.responses.Unauthorized.content.application/json",
+          "issue": "Component response 'application/json' content should have an example for AI understanding",
+          "description": "Reusable responses in components should have examples",
+          "fixSuggestion": "Add `example` or `examples` under each `components.responses[*].content[*]` media type entry.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-232",
+          "severity": "HIGH",
+          "rule": "ai-readiness-component-response-example",
+          "path": "components.responses.NotFound.content.application/json",
+          "issue": "Component response 'application/json' content should have an example for AI understanding",
+          "description": "Reusable responses in components should have examples",
+          "fixSuggestion": "Add `example` or `examples` under each `components.responses[*].content[*]` media type entry.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-233",
+          "severity": "HIGH",
+          "rule": "ai-readiness-component-response-example",
+          "path": "components.responses.Conflict.content.application/json",
+          "issue": "Component response 'application/json' content should have an example for AI understanding",
+          "description": "Reusable responses in components should have examples",
+          "fixSuggestion": "Add `example` or `examples` under each `components.responses[*].content[*]` media type entry.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-234",
+          "severity": "HIGH",
+          "rule": "ai-readiness-component-response-example",
+          "path": "components.responses.ValidationError.content.application/json",
+          "issue": "Component response 'application/json' content should have an example for AI understanding",
+          "description": "Reusable responses in components should have examples",
+          "fixSuggestion": "Add `example` or `examples` under each `components.responses[*].content[*]` media type entry.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-235",
+          "severity": "HIGH",
+          "rule": "ai-readiness-component-response-example",
+          "path": "components.responses.TooManyRequests.content.application/json",
+          "issue": "Component response 'application/json' content should have an example for AI understanding",
+          "description": "Reusable responses in components should have examples",
+          "fixSuggestion": "Add `example` or `examples` under each `components.responses[*].content[*]` media type entry.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-236",
+          "severity": "HIGH",
+          "rule": "ai-readiness-component-response-example",
+          "path": "components.responses.ServerError.content.application/json",
+          "issue": "Component response 'application/json' content should have an example for AI understanding",
+          "description": "Reusable responses in components should have examples",
+          "fixSuggestion": "Add `example` or `examples` under each `components.responses[*].content[*]` media type entry.",
+          "autoFixable": true
+        }
+      ]
+    }
+  },
+  "restApiReadiness": {
+    "spectral": {
+      "status": "completed",
+      "ruleset": "references/wso2_rest_api_design_guidelines.yaml",
+      "score": {
+        "critical": 0,
+        "high": 16,
+        "medium": 0,
+        "low": 0,
+        "rating": "Fair"
+      },
+      "issues": [
+        {
+          "id": "spec-001",
+          "severity": "HIGH",
+          "rule": "info-license",
+          "path": "info",
+          "issue": "Info object should have \"license\" object.",
+          "description": "The `info` object should have a `license` object.\n\n**Valid Example**\n\n```json\n{\n  \"info\": {\n    ... ,\n    \"license\": {\n      \"name\": \"Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)\",\n      \"url\": \"https://creativecommons.org/licenses/by-sa/4.0/\"\n    }\n  }\n}\n```",
+          "fixSuggestion": "Add `info.license` with your SPDX or license name, and include `url` to the full license text when possible.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-002",
+          "severity": "HIGH",
+          "rule": "contact-email",
+          "path": "info.contact",
+          "issue": "Contact object should have \"email\"",
+          "description": "The `contact` object should have a valid email.\n\n**Valid Example**\n\n```json\n{\n  \"contact\": {\n     ... ,\n     \"email\": \"support.contact@acme.com\"\n  },\n```",
+          "fixSuggestion": "Set `info.contact.email` to a monitored address (e.g. api-support@company.com) for security and integration questions.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-003",
+          "severity": "HIGH",
+          "rule": "contact-url",
+          "path": "info.contact",
+          "issue": "Contact object should have \"url\".",
+          "description": "The `contact` object should have a valid organization URL.\n\n**Valid Example**\n\n```json\n{\n  \"contact\": {\n     ... ,\n     \"url\": \"https://acme.com\",\n     ...\n  },\n```",
+          "fixSuggestion": "In `info.contact`, add a `url` string pointing to your product or support website so consumers know where to get help.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-004",
+          "severity": "HIGH",
+          "rule": "openapi-tags-alphabetical",
+          "path": "tags",
+          "issue": "OpenAPI object should have alphabetical \"tags\".",
+          "description": "Global tags specified at the root OpenAPI Document level should be in alphabetical order based on the `name` property.\n\n**Invalid Example**\n\n```json\n{\n  \"tags\":[\n    {\n      \"name\":\"Z Global Tag\"\n    },\n    {\n      \"name\":\"A Global Tag\"\n    }\n  ]\n}\n```\n\n**Valid Example**\n\n```json\n{\n  \"tags\":[\n    {\n      \"name\":\"A Global Tag\"\n    },\n    {\n      \"name\":\"Z Global Tag\"\n    }\n  ]\n}\n```",
+          "fixSuggestion": "Sort the global `tags` array by `name` (case-sensitive or locale as your style guide requires) for predictable navigation in docs and tools.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-005",
+          "severity": "HIGH",
+          "rule": "parameter-description",
+          "path": "paths./quotes/{quoteId}.parameters.0",
+          "issue": "Parameter objects must have \"description\".",
+          "description": "All `parameter` objects should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"parameters\": [\n    {\n      \"schema\": {\n        \"type\": \"integer\"\n      },\n      ... ,\n      ... ,\n      \"description\": \"The number of days to include in the response.\"\n    }\n  ]\n}\n```\n",
+          "fixSuggestion": "Add a non-empty `description` to every parameter (path, query, header) describing format, units, and defaults.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-006",
+          "severity": "HIGH",
+          "rule": "operation-description",
+          "path": "paths./quotes/{quoteId}.get",
+          "issue": "Operation \"description\" should be present and non-empty string.",
+          "description": "Each operation should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"get\": {\n    \"description\": \"Get a list of users.\"\n  }\n}\n```",
+          "fixSuggestion": "Add a non-empty `description` to each operation summarizing behavior, side effects, idempotency, and error cases.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-007",
+          "severity": "HIGH",
+          "rule": "parameter-description",
+          "path": "paths./policies/{policyId}.parameters.0",
+          "issue": "Parameter objects must have \"description\".",
+          "description": "All `parameter` objects should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"parameters\": [\n    {\n      \"schema\": {\n        \"type\": \"integer\"\n      },\n      ... ,\n      ... ,\n      \"description\": \"The number of days to include in the response.\"\n    }\n  ]\n}\n```\n",
+          "fixSuggestion": "Add a non-empty `description` to every parameter (path, query, header) describing format, units, and defaults.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-008",
+          "severity": "HIGH",
+          "rule": "operation-description",
+          "path": "paths./policies/{policyId}.get",
+          "issue": "Operation \"description\" should be present and non-empty string.",
+          "description": "Each operation should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"get\": {\n    \"description\": \"Get a list of users.\"\n  }\n}\n```",
+          "fixSuggestion": "Add a non-empty `description` to each operation summarizing behavior, side effects, idempotency, and error cases.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-009",
+          "severity": "HIGH",
+          "rule": "parameter-description",
+          "path": "paths./policies/{policyId}/claims.parameters.0",
+          "issue": "Parameter objects must have \"description\".",
+          "description": "All `parameter` objects should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"parameters\": [\n    {\n      \"schema\": {\n        \"type\": \"integer\"\n      },\n      ... ,\n      ... ,\n      \"description\": \"The number of days to include in the response.\"\n    }\n  ]\n}\n```\n",
+          "fixSuggestion": "Add a non-empty `description` to every parameter (path, query, header) describing format, units, and defaults.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-010",
+          "severity": "HIGH",
+          "rule": "operation-description",
+          "path": "paths./policies/{policyId}/claims.get",
+          "issue": "Operation \"description\" should be present and non-empty string.",
+          "description": "Each operation should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"get\": {\n    \"description\": \"Get a list of users.\"\n  }\n}\n```",
+          "fixSuggestion": "Add a non-empty `description` to each operation summarizing behavior, side effects, idempotency, and error cases.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-011",
+          "severity": "HIGH",
+          "rule": "resource-names-plural",
+          "path": "paths./properties/{propertyId}/policy",
+          "issue": "Resource names should generally be plural",
+          "description": "Resource names should generally be plural.\n\n**Invalid Example**\n\n```json\n{\n    \"paths\": {\n      \"/user\":\n    }\n  }\n```\n\n**Valid Example**\n\n```json\n{\n    \"paths\": {\n      \"/users\":\n    }\n}\n```",
+          "fixSuggestion": "Prefer plural collection paths (e.g. `/users`, `/orders`) unless the path is a singleton resource clearly named in your API style guide.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-012",
+          "severity": "HIGH",
+          "rule": "parameter-description",
+          "path": "paths./properties/{propertyId}/policy.parameters.0",
+          "issue": "Parameter objects must have \"description\".",
+          "description": "All `parameter` objects should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"parameters\": [\n    {\n      \"schema\": {\n        \"type\": \"integer\"\n      },\n      ... ,\n      ... ,\n      \"description\": \"The number of days to include in the response.\"\n    }\n  ]\n}\n```\n",
+          "fixSuggestion": "Add a non-empty `description` to every parameter (path, query, header) describing format, units, and defaults.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-013",
+          "severity": "HIGH",
+          "rule": "operation-description",
+          "path": "paths./claims.post",
+          "issue": "Operation \"description\" should be present and non-empty string.",
+          "description": "Each operation should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"get\": {\n    \"description\": \"Get a list of users.\"\n  }\n}\n```",
+          "fixSuggestion": "Add a non-empty `description` to each operation summarizing behavior, side effects, idempotency, and error cases.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-014",
+          "severity": "HIGH",
+          "rule": "parameter-description",
+          "path": "paths./claims/{claimId}.parameters.0",
+          "issue": "Parameter objects must have \"description\".",
+          "description": "All `parameter` objects should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"parameters\": [\n    {\n      \"schema\": {\n        \"type\": \"integer\"\n      },\n      ... ,\n      ... ,\n      \"description\": \"The number of days to include in the response.\"\n    }\n  ]\n}\n```\n",
+          "fixSuggestion": "Add a non-empty `description` to every parameter (path, query, header) describing format, units, and defaults.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-015",
+          "severity": "HIGH",
+          "rule": "operation-description",
+          "path": "paths./claims/{claimId}.get",
+          "issue": "Operation \"description\" should be present and non-empty string.",
+          "description": "Each operation should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"get\": {\n    \"description\": \"Get a list of users.\"\n  }\n}\n```",
+          "fixSuggestion": "Add a non-empty `description` to each operation summarizing behavior, side effects, idempotency, and error cases.",
+          "autoFixable": true
+        },
+        {
+          "id": "spec-016",
+          "severity": "HIGH",
+          "rule": "operation-description",
+          "path": "paths./claims/{claimId}.put",
+          "issue": "Operation \"description\" should be present and non-empty string.",
+          "description": "Each operation should have a description.\n\n**Valid Example**\n\n```json\n{\n  \"get\": {\n    \"description\": \"Get a list of users.\"\n  }\n}\n```",
+          "fixSuggestion": "Add a non-empty `description` to each operation summarizing behavior, side effects, idempotency, and error cases.",
+          "autoFixable": true
+        }
+      ]
+    }
+  }
+}
