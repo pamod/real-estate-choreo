@@ -8,8 +8,9 @@ endpoints:
       port: 5000
     type: REST
     networkVisibilities:
-      - Project
+      - Public
       - Organization
+      - Project
 
 configurations:
   env:

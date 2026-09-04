@@ -8,8 +8,9 @@ endpoints:
       port: 5001
     type: REST
     networkVisibilities:
-      - Project
+      - Public
       - Organization
+      - Project
 
 configurations:
   env:
